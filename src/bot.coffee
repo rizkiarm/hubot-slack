@@ -162,11 +162,16 @@ class SlackBot extends Adapter
 
     return unless user?.id?
 
+    dm_channel = @client.rtm.dataStore.getDMByName(user.name)
+
     newUser =
       name: user.name
       real_name: user.real_name
       email_address: user.profile.email
-      slack: {}
+      slack: {
+        dm_channel_id: dm_channel.id if dm_channel?
+      }
+
     for key, value of user
       # don't store the SlackClient, because it'd cause a circular reference
       # (it contains users and channels), and because it has sensitive information like the token
